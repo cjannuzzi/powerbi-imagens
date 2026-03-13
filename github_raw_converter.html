@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GitHub → Raw | Arquivos e Pastas</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --panel-2: #1f2937;
+      --text: #e5e7eb;
+      --muted: #94a3b8;
+      --primary: #f97316;
+      --primary-2: #fb923c;
+      --success: #22c55e;
+      --error: #ef4444;
+      --info: #60a5fa;
+      --border: rgba(255,255,255,0.08);
+      --shadow: 0 20px 45px rgba(0,0,0,0.35);
+      --radius: 20px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, Segoe UI, Roboto, Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top right, rgba(249,115,22,0.16), transparent 30%),
+        radial-gradient(circle at bottom left, rgba(251,146,60,0.10), transparent 25%),
+        linear-gradient(135deg, #020617 0%, #0f172a 50%, #111827 100%);
+      display: grid;
+      place-items: center;
+      padding: 28px;
+    }
+
+    .app {
+      width: min(1120px, 100%);
+      background: rgba(17, 24, 39, 0.92);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+    }
+
+    .hero {
+      padding: 28px 28px 16px;
+      background: linear-gradient(135deg, rgba(249,115,22,0.18), rgba(255,255,255,0.03));
+      border-bottom: 1px solid var(--border);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(249,115,22,0.12);
+      color: #fed7aa;
+      border: 1px solid rgba(249,115,22,0.25);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    h1 {
+      margin: 16px 0 8px;
+      font-size: clamp(28px, 4vw, 40px);
+      line-height: 1.05;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.6;
+      max-width: 900px;
+    }
+
+    .content {
+      display: grid;
+      gap: 22px;
+      padding: 24px 28px 28px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+    }
+
+    .card {
+      display: grid;
+      gap: 14px;
+      padding: 18px;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.03);
+    }
+
+    .card h2 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .field {
+      display: grid;
+      gap: 10px;
+    }
+
+    .label {
+      font-size: 14px;
+      font-weight: 700;
+      color: #f8fafc;
+    }
+
+    textarea,
+    input[type="text"] {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: var(--panel-2);
+      color: var(--text);
+      padding: 16px;
+      font-size: 15px;
+      line-height: 1.5;
+      outline: none;
+      transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+    }
+
+    textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    textarea:focus,
+    input[type="text"]:focus {
+      border-color: rgba(249,115,22,0.6);
+      box-shadow: 0 0 0 4px rgba(249,115,22,0.15);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 14px;
+      padding: 13px 18px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform .15s ease, opacity .2s ease, box-shadow .2s ease;
+    }
+
+    button:hover { transform: translateY(-1px); }
+    button:active { transform: translateY(0); }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      color: white;
+      box-shadow: 0 10px 20px rgba(249,115,22,0.22);
+    }
+
+    .btn-secondary {
+      background: #0b1220;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .status {
+      min-height: 24px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .status.success { color: var(--success); }
+    .status.error { color: var(--error); }
+    .status.info { color: var(--info); }
+
+    .tips {
+      display: grid;
+      gap: 12px;
+      padding: 18px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.03);
+    }
+
+    .tips-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 20px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    code {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.06);
+      padding: 2px 6px;
+      border-radius: 8px;
+      color: #fde68a;
+      word-break: break-all;
+    }
+
+    .footer {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .results {
+      display: grid;
+      gap: 12px;
+      max-height: 380px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .result-item {
+      display: grid;
+      gap: 8px;
+      padding: 14px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.025);
+    }
+
+    .result-name {
+      font-size: 14px;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .result-url {
+      font-size: 13px;
+      color: var(--muted);
+      word-break: break-all;
+      line-height: 1.5;
+    }
+
+    .row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .count {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    @media (max-width: 900px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="hero">
+      <div class="badge">GitHub Blob → Raw + Listagem de Pasta</div>
+      <h1>Conversor automático de link do GitHub para Raw</h1>
+      <p class="subtitle">
+        Agora o app converte links de arquivos e também aceita o link de uma pasta do GitHub para listar automaticamente os links raw de todos os arquivos dentro dela.
+      </p>
+    </section>
+
+    <section class="content">
+      <div class="grid">
+        <section class="card">
+          <h2>Modo arquivo</h2>
+          <p>Cole um link de arquivo do GitHub com <code>/blob/</code> e obtenha o link raw imediatamente.</p>
+
+          <div class="field">
+            <label class="label" for="githubUrl">Link do arquivo</label>
+            <textarea id="githubUrl" placeholder="Exemplo:
+https://github.com/cjannuzzi/powerbi-imagens/blob/main/contratantes/brk.png"></textarea>
+          </div>
+
+          <div class="actions">
+            <button class="btn-primary" id="convertBtn">Converter arquivo</button>
+            <button class="btn-secondary" id="copyBtn">Copiar Raw</button>
+            <button class="btn-secondary" id="clearFileBtn">Limpar</button>
+          </div>
+
+          <div class="field">
+            <label class="label" for="rawUrl">Link Raw</label>
+            <textarea id="rawUrl" readonly placeholder="O link convertido aparecerá aqui..."></textarea>
+          </div>
+
+          <div id="statusFile" class="status info">Cole um link de arquivo do GitHub para converter.</div>
+        </section>
+
+        <section class="card">
+          <h2>Modo pasta</h2>
+          <p>Cole o link de uma pasta no GitHub e o app lista os arquivos com seus respectivos links raw.</p>
+
+          <div class="field">
+            <label class="label" for="folderUrl">Link da pasta</label>
+            <input id="folderUrl" type="text" placeholder="Exemplo: https://github.com/cjannuzzi/powerbi-imagens/tree/main/contratantes" />
+          </div>
+
+          <label class="toggle">
+            <input type="checkbox" id="recursive" />
+            Buscar também subpastas recursivamente
+          </label>
+
+          <div class="actions">
+            <button class="btn-primary" id="listBtn">Listar arquivos da pasta</button>
+            <button class="btn-secondary" id="copyAllBtn">Copiar todos os raws</button>
+            <button class="btn-secondary" id="clearFolderBtn">Limpar</button>
+          </div>
+
+          <div id="statusFolder" class="status info">Cole o link de uma pasta pública do GitHub para listar os arquivos.</div>
+        </section>
+      </div>
+
+      <section class="card">
+        <div class="row">
+          <h2>Arquivos encontrados</h2>
+          <div class="count" id="resultCount">0 arquivos</div>
+        </div>
+        <div class="results" id="results"></div>
+      </section>
+
+      <div class="tips">
+        <div class="tips-title">Formatos aceitos</div>
+        <ul>
+          <li><strong>Arquivo:</strong> <code>https://github.com/usuario/repositorio/blob/branch/pasta/arquivo.png</code></li>
+          <li><strong>Pasta:</strong> <code>https://github.com/usuario/repositorio/tree/branch/pasta</code></li>
+          <li>Também funciona com links já em <code>raw.githubusercontent.com</code> no modo arquivo</li>
+          <li>Para listar pasta, o repositório precisa estar público</li>
+        </ul>
+      </div>
+
+      <div class="footer">
+        Dica: depois de gerar os raws, você pode colar diretamente no Excel ou Power BI para montar a sua dimensão de imagens.
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const githubUrl = document.getElementById('githubUrl');
+    const rawUrl = document.getElementById('rawUrl');
+    const convertBtn = document.getElementById('convertBtn');
+    const copyBtn = document.getElementById('copyBtn');
+    const clearFileBtn = document.getElementById('clearFileBtn');
+    const statusFile = document.getElementById('statusFile');
+
+    const folderUrl = document.getElementById('folderUrl');
+    const recursive = document.getElementById('recursive');
+    const listBtn = document.getElementById('listBtn');
+    const copyAllBtn = document.getElementById('copyAllBtn');
+    const clearFolderBtn = document.getElementById('clearFolderBtn');
+    const statusFolder = document.getElementById('statusFolder');
+    const results = document.getElementById('results');
+    const resultCount = document.getElementById('resultCount');
+
+    let folderResults = [];
+
+    function setStatus(element, message, type = 'info') {
+      element.textContent = message;
+      element.className = `status ${type}`;
+    }
+
+    function convertGithubToRaw(url) {
+      if (!url || !url.trim()) {
+        return { ok: false, message: 'Cole um link do GitHub para converter.' };
+      }
+
+      const cleaned = url.trim();
+
+      if (cleaned.includes('raw.githubusercontent.com')) {
+        return { ok: true, value: cleaned, message: 'Esse link já está em formato raw.' };
+      }
+
+      let parsed;
+      try {
+        parsed = new URL(cleaned);
+      } catch {
+        return { ok: false, message: 'O texto informado não é uma URL válida.' };
+      }
+
+      if (parsed.hostname !== 'github.com') {
+        return { ok: false, message: 'Informe um link do github.com no formato de arquivo.' };
+      }
+
+      const parts = parsed.pathname.split('/').filter(Boolean);
+      if (parts.length < 5) {
+        return { ok: false, message: 'Estrutura de URL insuficiente. Verifique o link do arquivo.' };
+      }
+
+      const [owner, repo, maybeBlob, branch, ...fileParts] = parts;
+      if (maybeBlob !== 'blob') {
+        return { ok: false, message: 'O link precisa conter /blob/ para ser convertido automaticamente.' };
+      }
+
+      if (!owner || !repo || !branch || fileParts.length === 0) {
+        return { ok: false, message: 'Não foi possível identificar usuário, repositório, branch e arquivo.' };
+      }
+
+      const raw = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${fileParts.join('/')}`;
+      return { ok: true, value: raw, message: 'Link convertido com sucesso.' };
+    }
+
+    function parseGithubFolderUrl(url) {
+      if (!url || !url.trim()) {
+        return { ok: false, message: 'Cole um link de pasta do GitHub.' };
+      }
+
+      let parsed;
+      try {
+        parsed = new URL(url.trim());
+      } catch {
+        return { ok: false, message: 'O texto informado não é uma URL válida.' };
+      }
+
+      if (parsed.hostname !== 'github.com') {
+        return { ok: false, message: 'Informe um link de pasta do github.com.' };
+      }
+
+      const parts = parsed.pathname.split('/').filter(Boolean);
+      if (parts.length < 4) {
+        return { ok: false, message: 'Estrutura insuficiente. Use um link no formato /usuario/repositorio/tree/branch/pasta.' };
+      }
+
+      const [owner, repo, treeKeyword, branch, ...pathParts] = parts;
+      if (treeKeyword !== 'tree') {
+        return { ok: false, message: 'O link da pasta precisa conter /tree/.' };
+      }
+
+      return {
+        ok: true,
+        owner,
+        repo,
+        branch,
+        path: pathParts.join('/')
+      };
+    }
+
+    function buildRawUrl(owner, repo, branch, path) {
+      return `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${path}`;
+    }
+
+    function renderResults(items) {
+      results.innerHTML = '';
+      resultCount.textContent = `${items.length} arquivo${items.length === 1 ? '' : 's'}`;
+
+      if (!items.length) {
+        results.innerHTML = '<div class="result-item"><div class="result-name">Nenhum arquivo encontrado</div><div class="result-url">Tente outra pasta ou habilite a busca recursiva.</div></div>';
+        return;
+      }
+
+      for (const item of items) {
+        const div = document.createElement('div');
+        div.className = 'result-item';
+        div.innerHTML = `
+          <div class="result-name">${item.name}</div>
+          <div class="result-url">${item.rawUrl}</div>
+        `;
+        results.appendChild(div);
+      }
+    }
+
+    async function fetchFolderContents(owner, repo, branch, path, recursiveMode = false) {
+      const encodedPath = path ? `/${path.split('/').map(encodeURIComponent).join('/')}` : '';
+      const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents${encodedPath}?ref=${encodeURIComponent(branch)}`;
+
+      const response = await fetch(apiUrl, {
+        headers: {
+          Accept: 'application/vnd.github+json'
+        }
+      });
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error('Pasta não encontrada. Verifique o link informado.');
+        }
+        if (response.status === 403) {
+          throw new Error('A API do GitHub bloqueou temporariamente a requisição. Tente novamente em instantes.');
+        }
+        throw new Error('Não foi possível consultar a pasta no GitHub.');
+      }
+
+      const data = await response.json();
+      if (!Array.isArray(data)) {
+        throw new Error('O link informado não parece apontar para uma pasta.');
+      }
+
+      let files = [];
+
+      for (const item of data) {
+        if (item.type === 'file') {
+          files.push({
+            name: item.name,
+            path: item.path,
+            rawUrl: buildRawUrl(owner, repo, branch, item.path)
+          });
+        }
+
+        if (recursiveMode && item.type === 'dir') {
+          const nestedFiles = await fetchFolderContents(owner, repo, branch, item.path, true);
+          files = files.concat(nestedFiles);
+        }
+      }
+
+      return files;
+    }
+
+    function runFileConversion() {
+      const result = convertGithubToRaw(githubUrl.value);
+      if (result.ok) {
+        rawUrl.value = result.value;
+        setStatus(statusFile, result.message, 'success');
+      } else {
+        rawUrl.value = '';
+        setStatus(statusFile, result.message, 'error');
+      }
+    }
+
+    async function runFolderListing() {
+      const parsed = parseGithubFolderUrl(folderUrl.value);
+      if (!parsed.ok) {
+        folderResults = [];
+        renderResults(folderResults);
+        setStatus(statusFolder, parsed.message, 'error');
+        return;
+      }
+
+      setStatus(statusFolder, 'Consultando pasta no GitHub...', 'info');
+      listBtn.disabled = true;
+
+      try {
+        folderResults = await fetchFolderContents(parsed.owner, parsed.repo, parsed.branch, parsed.path, recursive.checked);
+        renderResults(folderResults);
+        setStatus(statusFolder, `${folderResults.length} arquivo(s) listado(s) com sucesso.`, 'success');
+      } catch (error) {
+        folderResults = [];
+        renderResults(folderResults);
+        setStatus(statusFolder, error.message, 'error');
+      } finally {
+        listBtn.disabled = false;
+      }
+    }
+
+    convertBtn.addEventListener('click', runFileConversion);
+    githubUrl.addEventListener('paste', () => setTimeout(runFileConversion, 10));
+    githubUrl.addEventListener('input', () => {
+      if (!githubUrl.value.trim()) {
+        rawUrl.value = '';
+        setStatus(statusFile, 'Cole um link de arquivo do GitHub para converter.', 'info');
+        return;
+      }
+      runFileConversion();
+    });
+
+    copyBtn.addEventListener('click', async () => {
+      if (!rawUrl.value.trim()) {
+        setStatus(statusFile, 'Não há link raw para copiar.', 'error');
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(rawUrl.value);
+        setStatus(statusFile, 'Link raw copiado para a área de transferência.', 'success');
+      } catch {
+        rawUrl.select();
+        document.execCommand('copy');
+        setStatus(statusFile, 'Link raw copiado para a área de transferência.', 'success');
+      }
+    });
+
+    clearFileBtn.addEventListener('click', () => {
+      githubUrl.value = '';
+      rawUrl.value = '';
+      setStatus(statusFile, 'Campos limpos. Cole um novo link de arquivo.', 'info');
+      githubUrl.focus();
+    });
+
+    listBtn.addEventListener('click', runFolderListing);
+    folderUrl.addEventListener('paste', () => setTimeout(runFolderListing, 10));
+
+    copyAllBtn.addEventListener('click', async () => {
+      if (!folderResults.length) {
+        setStatus(statusFolder, 'Não há links para copiar.', 'error');
+        return;
+      }
+
+      const text = folderResults.map(item => `${item.name};${item.rawUrl}`).join('\n');
+      try {
+        await navigator.clipboard.writeText(text);
+        setStatus(statusFolder, 'Lista copiada no formato nome;rawUrl.', 'success');
+      } catch {
+        setStatus(statusFolder, 'Não foi possível copiar automaticamente.', 'error');
+      }
+    });
+
+    clearFolderBtn.addEventListener('click', () => {
+      folderUrl.value = '';
+      recursive.checked = false;
+      folderResults = [];
+      renderResults(folderResults);
+      setStatus(statusFolder, 'Campos limpos. Cole um novo link de pasta.', 'info');
+      folderUrl.focus();
+    });
+
+    renderResults([]);
+  </script>
+</body>
+</html>
